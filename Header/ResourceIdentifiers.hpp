@@ -8,8 +8,10 @@ namespace Textures
 	enum ID
 	{
 		Paddle,
+		Bricks,
 		WidePaddle,
 		GunPaddle,
+		Ball,
 		BackgroundImage,
 		TitleScreen,
 	};

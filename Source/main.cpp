@@ -4,7 +4,7 @@
 
 int main() {
 	try {
-		Game game;
+		Application game;
 		game.run();
 	}
 	catch(std::exception& e) {

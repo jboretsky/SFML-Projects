@@ -1,22 +1,38 @@
 #include "../Header/Application.hpp"
 #include "../Header/Utility.hpp"
+#include "../Header/GameState.hpp"
+#include "../Header/PauseState.hpp"
 
 #include <SFML/Window/Event.hpp>
 
 #include <iostream>
 
-const sf::Time Game::TimePerFrame = sf::seconds(1.f/60.f);
+const sf::Time Application::TimePerFrame = sf::seconds(1.f/60.f);
 
-Game::Game()
+Application::Application()
 : mWindow(sf::VideoMode(640, 480), "Breakout!")
 , mTextures()
-, mWorld(mWindow)
+, mFonts()
+, mPlayer()
+, mTextTest()
+, mStateStack(State::Context(mWindow, mTextures, mFonts, mPlayer))
 {
+	mWindow.setFramerateLimit(60);
 	mWindow.setKeyRepeatEnabled(false);
-	mWindow.setPosition(sf::Vector2i(10,50));
+
+	mFonts.load(Fonts::Main, "./media/Sansation.ttf");
+
+	mTextTest.setFont(mFonts.get(Fonts::Main));
+	mTextTest.setString("Hello world!");
+	centerOrigin(mTextTest);
+	mTextTest.setColor(sf::Color::Red);
+	mTextTest.setPosition(mWindow.getSize().x / 2.f, mWindow.getSize().y / 2.f);
+
+	registerStates();
+	mStateStack.pushState(States::Game);
 }
 
-void Game::run(){
+void Application::run(){
 	sf::Clock clock;
 	sf::Time timeSinceLastUpdate = sf::Time::Zero;
 	while (mWindow.isOpen()) {
@@ -26,30 +42,36 @@ void Game::run(){
 			timeSinceLastUpdate -= TimePerFrame;
 			processInput();
 			update(TimePerFrame);
+			if (mStateStack.isEmpty())
+				mWindow.close();
 		}
-		// updateStatistics(elapsedTime);
 		render();
 	}
 }
 
-void Game::processInput() {
+void Application::processInput() {
 	sf::Event event;
 	while (mWindow.pollEvent(event)) {
-		mWorld.handleEvent(event);
+		mStateStack.handleEvent(event);
 		if (event.type == sf::Event::Closed) {
 			mWindow.close();
 		}
 	}
 }
 
-void Game::update(sf::Time dt) {
-	mWorld.update(dt);
+void Application::update(sf::Time dt) {
+	mStateStack.update(dt);
 }
 
-void Game::render() {
+void Application::render() {
 	mWindow.clear(sf::Color::Black);
-	mWorld.draw();
+	mStateStack.draw();
+	mWindow.setView(mWindow.getDefaultView());
+	mWindow.draw(mTextTest);
 	mWindow.display();
 }
 
-// void updateStatistics(sf::Time);
+void Application::registerStates() {
+	mStateStack.registerState<GameState>(States::Game);
+	mStateStack.registerState<PauseState>(States::Pause);
+}

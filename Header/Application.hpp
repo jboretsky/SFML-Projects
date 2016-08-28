@@ -1,9 +1,10 @@
-#ifndef GAME
-#define GAME
+#ifndef APPLICATION
+#define APPLICATION
 
 #include "./ResourceHolder.hpp"
 #include "./ResourceIdentifiers.hpp"
-#include "./World.hpp"
+#include "./Player.hpp"
+#include "./StateStack.hpp"
 
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Keyboard.hpp>
@@ -11,29 +12,29 @@
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
-class Game {
+class Application {
 	public:
-		Game();
+		Application();
 		void run();
 		
 	private:
 		void processInput();
 		void update(sf::Time);
 		void render();
-		void updateStatistics(sf::Time);
+		
+		void registerStates();
 
 	private:
 		static const sf::Time TimePerFrame;
 
 		sf::RenderWindow mWindow;
-		World mWorld;
-		
 		TextureHolder mTextures;
+		FontHolder mFonts;
+		Player mPlayer;
 
-		sf::Font mFont;
-		sf::Text mStatisticsText;
-		sf::Time mStatisticsUpdateTime;
-		std::size_t mStatisticsNumFrames;
+		sf::Text mTextTest;
+
+		StateStack mStateStack;
 };
 
 #endif
