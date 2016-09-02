@@ -20,10 +20,7 @@ void Brick::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 }
 
 void Brick::updateCurrent(sf::Time dt) {
-	if (mBrickLayer == None) {
-		mIsMarkedForRemoval = true;
-		return;
-	}
+
 }
 
 sf::FloatRect Brick::getBoundingRect() const {
@@ -36,7 +33,7 @@ void Brick::hit() {
 	} else if (mBrickLayer == Two) {
 		mBrickLayer = One;
 	} else if (mBrickLayer == One) {
-		mBrickLayer = None;
+		mIsMarkedForRemoval = true;
 	}
 	mSprite.setTextureRect(getTypeCoords(mBrickLayer));
 }

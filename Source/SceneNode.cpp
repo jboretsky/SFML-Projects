@@ -139,6 +139,16 @@ void SceneNode::removeWrecks() {
 		mChildren.end(), std::mem_fn(&SceneNode::removeWrecks));
 }
 
+bool SceneNode::checkLevelComplete() const {
+	if (getCategory() == Category::Brick) {
+		return false;	
+	} 
+	for (auto& child : mChildren) {
+		if (child->checkLevelComplete() == false) return false;
+	}
+	return true;
+}
+
 bool collision(const SceneNode& lhs, const SceneNode& rhs) {
 	return lhs.getBoundingRect().intersects(rhs.getBoundingRect());
 }

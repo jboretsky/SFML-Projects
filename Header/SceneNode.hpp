@@ -38,6 +38,7 @@ class SceneNode : public sf::Drawable, public sf::Transformable, private sf::Non
 		virtual bool isDestroyed() const;
 		virtual bool isMarkedForRemoval() const;
 		void removeWrecks();
+		bool checkLevelComplete() const;
 
 	private:
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
