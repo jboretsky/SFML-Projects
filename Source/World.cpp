@@ -6,29 +6,27 @@
 #include <iostream>
 #include <cmath>
 
-World::World(sf::RenderWindow& window)
+World::World(sf::RenderWindow& window, FontHolder& fonts)
 : mWindow(window)
 , mWorldView(window.getDefaultView())
 , mTextures() 
+, mLevelManager()
 , mSceneGraph()
 , mSceneLayers()
 , mCommandQueue()
 , mPlayerPaddle(nullptr)
+, mLives(3)
 , mWorldBounds(0.f, 0.f, mWorldView.getSize().x, mWorldView.getSize().y)
 , mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldView.getSize().y / 1.05f) {
+
+	mLevelManager.openFromFile("./media/levels.txt");
 	loadTextures();
 	buildScene();
-	// mLivesText.setFont(mFonts.get(Fonts::Main));
-	// mLivesText.setString("lives");
-	// sf::FloatRect viewBounds(mWorldView.getCenter() - mWorldView.getSize() / 2.f, mWorldView.getSize());
-	// mLivesText.setPosition(0, 0);
 }
 
 void World::draw() {
 	mWindow.setView(mWorldView);
 	mWindow.draw(mSceneGraph);
-	// mWindow.setView(mWindow.getDefaultView());
-	// mWindow.draw(mLivesText);
 }
 
 void World::update(sf::Time dt) {
@@ -52,30 +50,47 @@ void World::buildScene() {
 		mSceneGraph.attachChild(std::move(layer));
 	}
 	
-	const sf::Texture& texture = mTextures.get(Textures::Paddle);
-	sf::IntRect textureRect(0,200,95,30);
+	sf::IntRect textureRect(0,0,80,20);
 	std::unique_ptr<Paddle> player(new Paddle(mTextures.get(Textures::Paddle), textureRect));
 	mPlayerPaddle = player.get();
 	mPlayerPaddle->setPosition(mSpawnPosition);
 	mSceneLayers[Foreground]->attachChild(std::move(player));
 
 	sf::IntRect ballRect(160, 200, 16, 16);
-	std::unique_ptr<Ball> ball(new Ball(mTextures.get(Textures::Paddle), ballRect));
+	std::unique_ptr<Ball> ball(new Ball(mTextures.get(Textures::Ball), ballRect));
 	mBall = ball.get();
-	mBall->setPosition(mWorldView.getCenter());
-	mBall->setVelocity(150.f, 150.f);
+	mBall->setPosition(mPlayerPaddle->getWorldPosition().x, mPlayerPaddle->getWorldPosition().y - mPlayerPaddle->getBoundingRect().height / 2.f - mBall->getBoundingRect().height / 2.f);
+	mBall->setVelocity(-150.f, -150.f);
 	mSceneLayers[Foreground]->attachChild(std::move(ball));
 
-	int coords = mWorldBounds.width / 66;
-	for (int j = 0; j < 10; ++j) {
-		for (int i = 0; i < coords; ++i) {
-			if (i != 0 && i != coords-1) {
-				std::unique_ptr<Brick> brick(new Brick(Brick::Three, mTextures.get(Textures::Bricks)));
-				brick->setPosition((float)(66*i + (brick->getBoundingRect().width / 2)), (float)(20 + 20*j + (brick->getBoundingRect().width / 2)));
-				mSceneLayers[Foreground]->attachChild(std::move(brick));
-			}
-		}
+	std::vector<LevelManager::BrickInfo*> currentLevelInfo = mLevelManager.getCurrentLevelVector();
+
+	for (int i = 0; i < currentLevelInfo.size(); ++i) {
+		std::unique_ptr<Brick> brick(new Brick(Brick::getType(currentLevelInfo[i]->type), mTextures.get(Textures::Bricks)));
+		brick->setPosition(currentLevelInfo[i]->position);
+		mSceneLayers[Foreground]->attachChild(std::move(brick));
 	}
+
+	// int coords = mWorldBounds.width / 66;
+	// for (int j = 0; j < 3; ++j) {
+	// 	for (int i = 0; i < coords; ++i) {
+	// 		if (i != 0 && i != coords-1) {
+	// 			std::unique_ptr<Brick> brick(new Brick(Brick::Three, mTextures.get(Textures::Bricks)));
+	// 			brick->setPosition((float)(15 + 66*i + (brick->getBoundingRect().width / 2)), (float)(20 + 20*j + (brick->getBoundingRect().width / 2)));
+	// 			mSceneLayers[Foreground]->attachChild(std::move(brick));
+	// 		}
+	// 	}
+	// }
+}
+
+// std::vector<LevelManager::BrickInfo*> World::getNextLevel() {
+
+// }
+
+void World::initPositions() {
+	mPlayerPaddle->setPosition(mSpawnPosition);
+	mBall->setPosition(mPlayerPaddle->getWorldPosition().x, mPlayerPaddle->getWorldPosition().y - mPlayerPaddle->getBoundingRect().height / 2.f - mBall->getBoundingRect().height / 2.f);
+	mBall->setVelocity(-150.f, -150.f);
 }
 
 CommandQueue& World::getCommandQueue() {
@@ -83,17 +98,18 @@ CommandQueue& World::getCommandQueue() {
 }
 
 void World::loadTextures() {
-	mTextures.load(Textures::Paddle, "./media/breakout_sprites.png");
+	mTextures.load(Textures::Ball, "./media/breakout_sprites.png");
 	mTextures.load(Textures::Bricks, "./media/bricks.png");
+	mTextures.load(Textures::Paddle, "./media/paddles.png");
 }
 
 void World::recalculateBallPosition() {
 	sf::FloatRect viewBounds(mWorldView.getCenter() - mWorldView.getSize() / 2.f, mWorldView.getSize());
+
 	sf::Vector2f ballPosition = mBall->getPosition();
 	float ballMidY = mBall->getBoundingRect().height / 2.f;
 	float ballMidX = mBall->getBoundingRect().width / 2.f;
 
-	sf::Vector2f paddlePosition = mPlayerPaddle->getPosition();
 	float paddleMidY = mPlayerPaddle->getBoundingRect().height / 2.f;
 	float paddleMidX = mPlayerPaddle->getBoundingRect().width / 2.f;
 
@@ -113,6 +129,10 @@ void World::recalculateBallPosition() {
 		sf::Vector2f velocity = mBall->getVelocity();
 		float newY = -velocity.y;
 		mBall->setVelocity(velocity.x, newY);
+	}
+
+	if (ballPosition.y - ballMidY > viewBounds.height) {
+		mBallDown = true;
 	}
 }
 
@@ -173,6 +193,22 @@ void World::handleCollisions() {
 			brick.hit();
 		}
 	}
+}
+
+void World::setLives(int lives) {
+	mLives = lives;
+}
+
+int World::getLives() {
+	return mLives;
+}
+
+bool World::getBallDown() {
+	return mBallDown;
+}
+
+void World::setBallDown(bool value) {
+	mBallDown = value;
 }
 
 float angle(const sf::Vector2f& a, const sf::Vector2f& b)

@@ -8,6 +8,7 @@
 #include "./Brick.hpp"
 #include "./Player.hpp"
 #include "./CommandQueue.hpp"
+#include "./LevelManager.hpp"
 
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -16,11 +17,17 @@
 
 class World : private sf::NonCopyable {
 	public:
-		explicit World(sf::RenderWindow& window);
+		explicit World(sf::RenderWindow& window, FontHolder& fonts);
 		void update(sf::Time dt);
 		void draw();
 
 		CommandQueue& getCommandQueue();
+
+		void setLives(int lives);
+		int getLives();
+		void setBallDown(bool value);
+		bool getBallDown();
+		void initPositions();
 
 	private:
 		void loadTextures();
@@ -41,6 +48,7 @@ class World : private sf::NonCopyable {
 		sf::RenderWindow& mWindow;
 		sf::View mWorldView;
 		TextureHolder mTextures;
+		LevelManager mLevelManager;
 
 		SceneNode mSceneGraph;
 		std::array<SceneNode*, LayerCount> mSceneLayers;
@@ -51,6 +59,9 @@ class World : private sf::NonCopyable {
 		Paddle* mPlayerPaddle;
 		Ball* mBall;
 		std::vector<Brick*> mBricks;
+
+		int mLives;
+		bool mBallDown;
 };
 
 float angle(const sf::Vector2f& a, const sf::Vector2f& b = sf::Vector2f(0.f, 0.f));
