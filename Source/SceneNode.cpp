@@ -122,6 +122,23 @@ void SceneNode::drawBoundingRect(sf::RenderTarget& target, sf::RenderStates stat
 	target.draw(shape);
 }
 
+bool SceneNode::isDestroyed() const {
+	return false;
+}
+
+bool SceneNode::isMarkedForRemoval() const {
+	return isDestroyed();
+}
+
+void SceneNode::removeWrecks() {
+	auto wreckfieldBegin = std::remove_if(mChildren.begin(),
+		mChildren.end(), std::mem_fn(&SceneNode::isMarkedForRemoval));
+	mChildren.erase(wreckfieldBegin, mChildren.end());
+
+	std::for_each(mChildren.begin(),
+		mChildren.end(), std::mem_fn(&SceneNode::removeWrecks));
+}
+
 bool collision(const SceneNode& lhs, const SceneNode& rhs) {
 	return lhs.getBoundingRect().intersects(rhs.getBoundingRect());
 }

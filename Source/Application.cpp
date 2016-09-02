@@ -22,12 +22,6 @@ Application::Application()
 
 	mFonts.load(Fonts::Main, "./media/Sansation.ttf");
 
-	mTextTest.setFont(mFonts.get(Fonts::Main));
-	mTextTest.setString("Hello world!");
-	centerOrigin(mTextTest);
-	mTextTest.setColor(sf::Color::Red);
-	mTextTest.setPosition(mWindow.getSize().x / 2.f, mWindow.getSize().y / 2.f);
-
 	registerStates();
 	mStateStack.pushState(States::Game);
 }
@@ -66,8 +60,6 @@ void Application::update(sf::Time dt) {
 void Application::render() {
 	mWindow.clear(sf::Color::Black);
 	mStateStack.draw();
-	mWindow.setView(mWindow.getDefaultView());
-	mWindow.draw(mTextTest);
 	mWindow.display();
 }
 

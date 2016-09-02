@@ -19,6 +19,8 @@ class GameState : public State {
 	private:
 		World mWorld;
 		Player& mPlayer;
+
+		sf::Text mLivesText;
 };
 
 #endif

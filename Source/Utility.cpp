@@ -12,6 +12,12 @@ std::string toString(const T& value) {
 	return stream.str();
 }
 
+std::string toString(int i) {
+	std::stringstream stream;
+	stream << i;
+	return stream.str();
+}
+
 void centerOrigin(sf::Sprite& sprite) {
 	sf::FloatRect bounds = sprite.getLocalBounds();
 	sprite.setOrigin(std::floor(bounds.left + bounds.width / 2.f), std::floor(bounds.top + bounds.height / 2.f));

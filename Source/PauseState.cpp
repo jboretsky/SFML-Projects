@@ -10,14 +10,14 @@ PauseState::PauseState(StateStack& stack, Context context)
 : State(stack, context)
 , mBackgroundSprite()
 , mPausedText() {
-	// sf::Font& font = context.fonts->get(Fonts::Main);
+	sf::Font& font = context.fonts->get(Fonts::Main);
 	sf::Vector2f windowSize(context.window->getSize());
 
-	// mPausedText.setFont(font);
-	// mPausedText.setString("Game Paused");	
-	// mPausedText.setCharacterSize(70);
-	// centerOrigin(mPausedText);
-	// mPausedText.setPosition(0.5f * windowSize.x, 0.4f * windowSize.y);
+	mPausedText.setFont(font);
+	mPausedText.setString("Game Paused, Press any key to continue");	
+	mPausedText.setCharacterSize(25);
+	centerOrigin(mPausedText);
+	mPausedText.setPosition(0.5f * windowSize.x, 0.4f * windowSize.y);
 }
 
 void PauseState::draw() {
@@ -29,7 +29,7 @@ void PauseState::draw() {
 	backgroundShape.setSize(window.getView().getSize());
 
 	window.draw(backgroundShape);
-	// window.draw(mPausedText);
+	window.draw(mPausedText);
 }
 
 bool PauseState::update(sf::Time) {
@@ -39,9 +39,7 @@ bool PauseState::update(sf::Time) {
 bool PauseState::handleEvent(const sf::Event& event)
 {
 	if (event.type == sf::Event::KeyPressed) {
-		if (event.key.code == sf::Keyboard::Escape) {
-			requestStackPop();
-		}
+		requestStackPop();
 	}
 	return false;
 }

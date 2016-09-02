@@ -10,6 +10,7 @@ namespace sf {
 
 template <typename T>
 std::string toString(const T& value);
+std::string toString(int i);
 
 void centerOrigin(sf::Sprite& sprite);
 void centerOrigin(sf::Text& text);

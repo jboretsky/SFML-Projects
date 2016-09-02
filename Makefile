@@ -9,7 +9,7 @@ sfml-app: $(OBJ_FILES)
 
 obj/%.o: Source/%.cpp 
 	@echo "Compiling..."
-	$(CC) -std=c++11 -c -o $@ $<
+	$(CC) -g -std=c++11 -c -o $@ $<
 
 clean:
 	rm -rf **/*.o sfml-app

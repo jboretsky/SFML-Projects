@@ -6,7 +6,8 @@
 
 Brick::Brick(brickLayer layer, sf::Texture& texture)
 : mBrickLayer(layer)
-, mSprite(texture, getTypeCoords(layer)) {
+, mSprite(texture, getTypeCoords(layer))
+, mIsMarkedForRemoval(false) {
 	centerOrigin(mSprite);
 }
 
@@ -19,8 +20,8 @@ void Brick::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 }
 
 void Brick::updateCurrent(sf::Time dt) {
-	if (mBrickLayer <= 0) {
-		// mIsMarkedForRemoval = true;
+	if (mBrickLayer == None) {
+		mIsMarkedForRemoval = true;
 		return;
 	}
 }
@@ -35,7 +36,7 @@ void Brick::hit() {
 	} else if (mBrickLayer == Two) {
 		mBrickLayer = One;
 	} else if (mBrickLayer == One) {
-		setPosition(-100,0);
+		mBrickLayer = None;
 	}
 	mSprite.setTextureRect(getTypeCoords(mBrickLayer));
 }
@@ -54,4 +55,22 @@ sf::IntRect Brick::getTypeCoords(brickLayer layer) {
 			break;
 	}
 	return rect;
+}
+
+Brick::brickLayer Brick::getType(int i) {
+	if (i == 1) {
+		return Brick::One;
+	} else if (i == 2) {
+		return Brick::Two;
+	} else if (i == 3) {
+		return Brick::Three;
+	}
+}
+
+bool Brick::isDestroyed() const {
+	return mBrickLayer == Brick::None;
+}
+
+bool Brick::isMarkedForRemoval() const {
+	return mIsMarkedForRemoval;
 }
