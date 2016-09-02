@@ -168,9 +168,19 @@ void World::handleCollisions() {
 	for (auto pair : collisionPairs) {
 		if (matchesCategories(pair, Category::Player, Category::Ball)) {
 			auto& ball = static_cast<Ball&>(*pair.second);
+			auto& paddle = static_cast<Paddle&>(*pair.first);
+
+			float x = ball.getWorldPosition().x - paddle.getWorldPosition().x; // x will be 0 if it hits right in the center, negative to the left, positive to the right
+			std::cout << "X position hit: "<< x << std::endl;
+			float range = 180 - 30 * 2; // range is 120;
+			float degrees = (range * x / paddle.getBoundingRect().width) + 90;
+			std::cout << "Degrees: " << degrees << std::endl;
+			float ball_new_angle = 3.14 - to_radians(degrees);
+			std::cout << "New radians: " << ball_new_angle << std::endl;
 
 			sf::Vector2f currVelocity = ball.getVelocity();
-			mBall->setVelocity(currVelocity.x, -currVelocity.y);
+
+			mBall->setVelocity(300* std::cos(ball_new_angle), -300 * std::sin(ball_new_angle));
 		}
 		if (matchesCategories(pair, Category::Ball, Category::Brick)) {
 			auto& ball = static_cast<Ball&>(*pair.first);
@@ -180,8 +190,7 @@ void World::handleCollisions() {
 			float angle_ball = to_degrees(angle(ball.getWorldPosition(), brick.getWorldPosition()));
 			float brick_ratio = to_degrees(std::tan((float) brick.getBoundingRect().height / brick.getBoundingRect().width));
 			
-			std::cout << "world positions: ball: " << ball.getWorldPosition().x << " brick:" << brick.getWorldPosition().x << std::endl;
-			std::cout << "angles: " << angle_ball << " " << brick_ratio << std::endl;
+			// std::cout << "angle of brick to ball: " << angle_ball << ", brick ratio:" << brick_ratio << std::endl;
 
 			if (angle_ball > 180 + brick_ratio && angle_ball < 360 - brick_ratio) {
 				ball.setVelocity(currVelocity.x, std::abs(currVelocity.y));
@@ -225,6 +234,10 @@ void World::loadNextLevel() {
 		brick->setPosition(currentLevelInfo[i]->position);
 		mSceneLayers[Foreground]->attachChild(std::move(brick));
 	}
+}
+
+float to_radians(float degrees) {
+	return degrees * 3.14 / 180;
 }
 
 float angle(const sf::Vector2f& a, const sf::Vector2f& b)

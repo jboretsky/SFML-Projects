@@ -68,5 +68,6 @@ class World : private sf::NonCopyable {
 
 float angle(const sf::Vector2f& a, const sf::Vector2f& b = sf::Vector2f(0.f, 0.f));
 float to_degrees(float radians);
+float to_radians(float degrees);
 
 #endif
