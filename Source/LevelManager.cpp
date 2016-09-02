@@ -51,7 +51,7 @@ std::vector<LevelManager::BrickInfo*> LevelManager::getCurrentLevelVector() {
 		int length = line.size();
 		for (int j = 0; j < NB_BRICK_COLS && j < length; ++j) {
 			if (line[j] != '.') {
-				bricks.push_back(new BrickInfo(line[j] - '0', sf::Vector2f(15 + 66 * j + 33, 20*i + 10)));
+				bricks.push_back(new BrickInfo(line[j] - '0', sf::Vector2f(66 * j + 33, 20*i + 10)));
 			}
 		}
 	}

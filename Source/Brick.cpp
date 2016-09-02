@@ -50,8 +50,14 @@ sf::IntRect Brick::getTypeCoords(brickLayer layer) {
 		case Three:
 			rect = sf::IntRect(0,40,66,20);
 			break;
+		case Unbreakable:
+			rect = sf::IntRect(0,0,66,20);
 	}
 	return rect;
+}
+
+int Brick::getType() const {
+	return mBrickLayer;
 }
 
 Brick::brickLayer Brick::getType(int i) {
@@ -61,6 +67,8 @@ Brick::brickLayer Brick::getType(int i) {
 		return Brick::Two;
 	} else if (i == 3) {
 		return Brick::Three;
+	} else if (i == 4) {
+		return Brick::Unbreakable;
 	}
 }
 

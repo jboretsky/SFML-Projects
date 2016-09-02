@@ -12,6 +12,7 @@ class Brick : public Entity {
 			One,
 			Two,
 			Three,
+			Unbreakable,
 		};
 
 	public:

@@ -9,7 +9,8 @@ namespace States {
 		Game,
 		Loading,
 		Pause,
-		Settings
+		LevelComplete,
+		Settings,
 	};
 }
 

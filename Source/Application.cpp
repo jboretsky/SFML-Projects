@@ -2,6 +2,7 @@
 #include "../Header/Utility.hpp"
 #include "../Header/GameState.hpp"
 #include "../Header/PauseState.hpp"
+#include "../Header/LevelCompleteState.hpp"
 
 #include <SFML/Window/Event.hpp>
 
@@ -10,7 +11,7 @@
 const sf::Time Application::TimePerFrame = sf::seconds(1.f/60.f);
 
 Application::Application()
-: mWindow(sf::VideoMode(640, 480), "Breakout!")
+: mWindow(sf::VideoMode(660, 480), "Breakout!")
 , mTextures()
 , mFonts()
 , mPlayer()
@@ -66,4 +67,5 @@ void Application::render() {
 void Application::registerStates() {
 	mStateStack.registerState<GameState>(States::Game);
 	mStateStack.registerState<PauseState>(States::Pause);
+	mStateStack.registerState<LevelCompleteState>(States::LevelComplete);
 }

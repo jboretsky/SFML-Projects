@@ -41,7 +41,7 @@ bool GameState::update(sf::Time dt)
 	if (isComplete) {
 		mWorld.initPositions();
 		mWorld.loadNextLevel();
-		requestStackPush(States::Pause);
+		requestStackPush(States::LevelComplete);
 	}
 
 	mLivesText.setString("Lives: " + toString(mWorld.getLives()));

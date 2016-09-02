@@ -1,4 +1,5 @@
 #include "../Header/SceneNode.hpp"
+#include "../Header/Brick.hpp"
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>

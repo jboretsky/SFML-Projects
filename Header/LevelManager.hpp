@@ -15,7 +15,7 @@ public:
 	};
 public:
 	static const int NB_BRICK_LINES = 15; // number of lines
-	static const int NB_BRICK_COLS  = 9; // number of columns
+	static const int NB_BRICK_COLS  = 10; // number of columns
 	static const int OFFSET    = 15;  // left offset
 
 	LevelManager();
