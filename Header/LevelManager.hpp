@@ -14,7 +14,7 @@ public:
 		sf::Vector2f position;
 	};
 public:
-	static const int NB_BRICK_LINES = 10; // number of lines
+	static const int NB_BRICK_LINES = 15; // number of lines
 	static const int NB_BRICK_COLS  = 9; // number of columns
 	static const int OFFSET    = 15;  // left offset
 
@@ -22,6 +22,7 @@ public:
 	~LevelManager();
 
 	void openFromFile(const std::string& filename);
+	int getCurrentLevel() const;
 	// void load();
 	void loadNext();
 	std::vector<BrickInfo*> getCurrentLevelVector();

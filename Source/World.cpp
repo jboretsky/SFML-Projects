@@ -38,6 +38,8 @@ void World::update(sf::Time dt) {
 
 	mSceneGraph.update(dt);
 	handleCollisions();
+
+	mSceneGraph.removeWrecks();
 	checkPosition();
 	recalculateBallPosition();
 }
@@ -203,12 +205,26 @@ int World::getLives() {
 	return mLives;
 }
 
-bool World::getBallDown() {
+bool World::getBallDown() const {
 	return mBallDown;
 }
 
 void World::setBallDown(bool value) {
 	mBallDown = value;
+}
+
+bool World::checkLevelComplete() const{
+	return mSceneGraph.checkLevelComplete();
+}
+
+void World::loadNextLevel() {
+	std::vector<LevelManager::BrickInfo*> currentLevelInfo = mLevelManager.getCurrentLevelVector();
+
+	for (int i = 0; i < currentLevelInfo.size(); ++i) {
+		std::unique_ptr<Brick> brick(new Brick(Brick::getType(currentLevelInfo[i]->type), mTextures.get(Textures::Bricks)));
+		brick->setPosition(currentLevelInfo[i]->position);
+		mSceneLayers[Foreground]->attachChild(std::move(brick));
+	}
 }
 
 float angle(const sf::Vector2f& a, const sf::Vector2f& b)

@@ -35,9 +35,13 @@ void LevelManager::openFromFile(const std::string& filename) {
 
 // };
 
-// void LevelManager::loadNext() {
+int LevelManager::getCurrentLevel() const {
+	return mCurrentLevel;
+}
 
-// };
+void LevelManager::loadNext() {
+
+};
 
 std::vector<LevelManager::BrickInfo*> LevelManager::getCurrentLevelVector() {
 	std::vector<BrickInfo*> bricks;
@@ -51,5 +55,6 @@ std::vector<LevelManager::BrickInfo*> LevelManager::getCurrentLevelVector() {
 			}
 		}
 	}
+	mCurrentLevel++;
 	return bricks;
 };

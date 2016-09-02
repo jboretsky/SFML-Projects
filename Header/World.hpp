@@ -26,8 +26,10 @@ class World : private sf::NonCopyable {
 		void setLives(int lives);
 		int getLives();
 		void setBallDown(bool value);
-		bool getBallDown();
+		bool getBallDown() const;
 		void initPositions();
+		bool checkLevelComplete() const;
+		void loadNextLevel();
 
 	private:
 		void loadTextures();
