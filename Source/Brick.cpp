@@ -51,14 +51,14 @@ sf::IntRect Brick::getTypeCoords(brickLayer layer) {
 			rect = sf::IntRect(0,40,66,20);
 			break;
 		case Unbreakable:
-			rect = sf::IntRect(0,0,66,20);
+			rect = sf::IntRect(0,60,66,20);
 	}
 	return rect;
 }
 
-int Brick::getType() const {
-	return mBrickLayer;
-}
+// int Brick::getType() const {
+// 	return mBrickLayer;
+// }
 
 Brick::brickLayer Brick::getType(int i) {
 	if (i == 1) {
