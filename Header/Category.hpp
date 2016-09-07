@@ -8,6 +8,7 @@ namespace Category {
 		Player = 1 << 1,
 		Ball = 1 << 2,
 		Brick = 1 << 3,
+		Unbreakable = 1 << 4,
 	};
 };
 

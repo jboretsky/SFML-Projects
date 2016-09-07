@@ -171,18 +171,18 @@ void World::handleCollisions() {
 			auto& paddle = static_cast<Paddle&>(*pair.first);
 
 			float x = ball.getWorldPosition().x - paddle.getWorldPosition().x; // x will be 0 if it hits right in the center, negative to the left, positive to the right
-			std::cout << "X position hit: "<< x << std::endl;
+			// std::cout << "X position hit: "<< x << std::endl;
 			float range = 180 - 30 * 2; // range is 120;
 			float degrees = (range * x / paddle.getBoundingRect().width) + 90;
-			std::cout << "Degrees: " << degrees << std::endl;
+			// std::cout << "Degrees: " << degrees << std::endl;
 			float ball_new_angle = 3.14 - to_radians(degrees);
-			std::cout << "New radians: " << ball_new_angle << std::endl;
+			// std::cout << "New radians: " << ball_new_angle << std::endl;
 
 			sf::Vector2f currVelocity = ball.getVelocity();
 
 			mBall->setVelocity(300* std::cos(ball_new_angle), -300 * std::sin(ball_new_angle));
 		}
-		if (matchesCategories(pair, Category::Ball, Category::Brick)) {
+		if (matchesCategories(pair, Category::Ball, Category::Brick) || matchesCategories(pair, Category::Ball, Category::Unbreakable)) {
 			auto& ball = static_cast<Ball&>(*pair.first);
 			auto& brick = static_cast<Brick&>(*pair.second);
 
@@ -227,6 +227,16 @@ bool World::checkLevelComplete() const{
 }
 
 void World::loadNextLevel() {
+
+	Command command;
+	command.category = Category::Unbreakable;
+	command.action = derivedAction<Brick>([this] (Brick& b, sf::Time)
+	{
+			b.destroy();
+	});
+
+	mCommandQueue.push(command);
+
 	std::vector<LevelManager::BrickInfo*> currentLevelInfo = mLevelManager.getCurrentLevelVector();
 
 	for (int i = 0; i < currentLevelInfo.size(); ++i) {

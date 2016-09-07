@@ -12,7 +12,8 @@ Brick::Brick(brickLayer layer, sf::Texture& texture)
 }
 
 unsigned int Brick::getCategory() const {
-	return Category::Brick;
+	if (mBrickLayer != Brick::Unbreakable) return Category::Brick;
+	return Category::Unbreakable;
 }
 
 void Brick::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const {
@@ -28,12 +29,13 @@ sf::FloatRect Brick::getBoundingRect() const {
 }
 
 void Brick::hit() {
+	std::cout << mBrickLayer << std::endl;
 	if (mBrickLayer == Three) {
 		mBrickLayer = Two;
 	} else if (mBrickLayer == Two) {
 		mBrickLayer = One;
 	} else if (mBrickLayer == One) {
-		mIsMarkedForRemoval = true;
+		mBrickLayer = None;
 	}
 	mSprite.setTextureRect(getTypeCoords(mBrickLayer));
 }
@@ -52,6 +54,7 @@ sf::IntRect Brick::getTypeCoords(brickLayer layer) {
 			break;
 		case Unbreakable:
 			rect = sf::IntRect(0,60,66,20);
+			break;
 	}
 	return rect;
 }
@@ -73,9 +76,13 @@ Brick::brickLayer Brick::getType(int i) {
 }
 
 bool Brick::isDestroyed() const {
-	return mBrickLayer == Brick::None;
+	return mBrickLayer == None;
 }
 
-bool Brick::isMarkedForRemoval() const {
-	return mIsMarkedForRemoval;
+void Brick::destroy() {
+	mBrickLayer = None;
 }
+
+// bool Brick::isMarkedForRemoval() const {
+// 	return mIsMarkedForRemoval;
+// }

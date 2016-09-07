@@ -23,13 +23,14 @@ class Brick : public Entity {
 		sf::IntRect getTypeCoords(brickLayer layer);
 
 		void hit();
+		void destroy();
 		static Brick::brickLayer getType(int i);
 
 	private:
 		virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 		virtual void updateCurrent(sf::Time dt);
 		virtual bool isDestroyed() const;
-		virtual bool isMarkedForRemoval() const;
+		// virtual bool isMarkedForRemoval() const;
 
 	private:
 		sf::Sprite mSprite;

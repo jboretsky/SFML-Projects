@@ -39,11 +39,17 @@ bool GameState::update(sf::Time dt)
 
 	bool isComplete = mWorld.checkLevelComplete();
 	if (isComplete) {
-		mWorld.initPositions();
 		mWorld.loadNextLevel();
+		mWorld.initPositions();
+		mWorld.setLives(mWorld.getLives() + 1);
 		requestStackPush(States::LevelComplete);
 	}
 
+	if (mWorld.getLives() == 0) {
+		// game over
+		requestStateClear();
+		requestStackPush(States::Pause);
+	}
 	mLivesText.setString("Lives: " + toString(mWorld.getLives()));
 	return true;
 }
