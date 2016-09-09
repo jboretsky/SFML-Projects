@@ -16,6 +16,8 @@ World::World(sf::RenderWindow& window, FontHolder& fonts)
 , mCommandQueue()
 , mPlayerPaddle(nullptr)
 , mLives(3)
+, mBricksDestroyed(0)
+, mBallVelocity(BALL_INIT_VELOCITY)
 , mWorldBounds(0.f, 0.f, mWorldView.getSize().x, mWorldView.getSize().y)
 , mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldView.getSize().y / 1.05f) {
 
@@ -32,9 +34,7 @@ void World::draw() {
 void World::update(sf::Time dt) {
 	mPlayerPaddle->setVelocity(0.f, 0.f);
 
-	while(!mCommandQueue.isEmpty()) {
-		mSceneGraph.onCommand(mCommandQueue.pop(), dt);
-	} 
+	runCommands(dt);
 
 	mSceneGraph.update(dt);
 	handleCollisions();
@@ -42,6 +42,12 @@ void World::update(sf::Time dt) {
 	mSceneGraph.removeWrecks();
 	checkPosition();
 	recalculateBallPosition();
+}
+
+void World::runCommands(sf::Time dt) {
+	while(!mCommandQueue.isEmpty()) {
+		mSceneGraph.onCommand(mCommandQueue.pop(), dt);
+	}
 }
 
 void World::buildScene() {
@@ -72,22 +78,7 @@ void World::buildScene() {
 		brick->setPosition(currentLevelInfo[i]->position);
 		mSceneLayers[Foreground]->attachChild(std::move(brick));
 	}
-
-	// int coords = mWorldBounds.width / 66;
-	// for (int j = 0; j < 3; ++j) {
-	// 	for (int i = 0; i < coords; ++i) {
-	// 		if (i != 0 && i != coords-1) {
-	// 			std::unique_ptr<Brick> brick(new Brick(Brick::Three, mTextures.get(Textures::Bricks)));
-	// 			brick->setPosition((float)(15 + 66*i + (brick->getBoundingRect().width / 2)), (float)(20 + 20*j + (brick->getBoundingRect().width / 2)));
-	// 			mSceneLayers[Foreground]->attachChild(std::move(brick));
-	// 		}
-	// 	}
-	// }
 }
-
-// std::vector<LevelManager::BrickInfo*> World::getNextLevel() {
-
-// }
 
 void World::initPositions() {
 	mPlayerPaddle->setPosition(mSpawnPosition);
@@ -178,9 +169,16 @@ void World::handleCollisions() {
 			float ball_new_angle = 3.14 - to_radians(degrees);
 			// std::cout << "New radians: " << ball_new_angle << std::endl;
 
-			sf::Vector2f currVelocity = ball.getVelocity();
+			auto newVelocity = mBallVelocity + (mBricksDestroyed * BALL_SPEED_STEP);
+			if (newVelocity < MAX_BALL_SPEED)
+				mBallVelocity = newVelocity;
+			else {
+				mBallVelocity = MAX_BALL_SPEED;
+			}
 
-			mBall->setVelocity(300* std::cos(ball_new_angle), -300 * std::sin(ball_new_angle));
+			mBricksDestroyed = 0;
+
+			mBall->setVelocity(mBallVelocity * std::cos(ball_new_angle), -mBallVelocity * std::sin(ball_new_angle));
 		}
 		if (matchesCategories(pair, Category::Ball, Category::Brick) || matchesCategories(pair, Category::Ball, Category::Unbreakable)) {
 			auto& ball = static_cast<Ball&>(*pair.first);
@@ -189,6 +187,10 @@ void World::handleCollisions() {
 			auto currVelocity = ball.getVelocity();
 			float angle_ball = to_degrees(angle(ball.getWorldPosition(), brick.getWorldPosition()));
 			float brick_ratio = to_degrees(std::tan((float) brick.getBoundingRect().height / brick.getBoundingRect().width));
+
+			if (brick.getType() == 1) {
+				mBricksDestroyed += 1;
+			}
 			
 			// std::cout << "angle of brick to ball: " << angle_ball << ", brick ratio:" << brick_ratio << std::endl;
 
@@ -226,7 +228,7 @@ bool World::checkLevelComplete() const{
 	return mSceneGraph.checkLevelComplete();
 }
 
-void World::loadNextLevel() {
+void World::loadNextLevel(sf::Time dt) {
 
 	Command command;
 	command.category = Category::Unbreakable;
@@ -236,6 +238,9 @@ void World::loadNextLevel() {
 	});
 
 	mCommandQueue.push(command);
+
+	runCommands(dt);
+	mBallVelocity = BALL_INIT_VELOCITY;
 
 	std::vector<LevelManager::BrickInfo*> currentLevelInfo = mLevelManager.getCurrentLevelVector();
 

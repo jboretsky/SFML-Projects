@@ -39,7 +39,7 @@ bool GameState::update(sf::Time dt)
 
 	bool isComplete = mWorld.checkLevelComplete();
 	if (isComplete) {
-		mWorld.loadNextLevel();
+		mWorld.loadNextLevel(dt);
 		mWorld.initPositions();
 		mWorld.setLives(mWorld.getLives() + 1);
 		requestStackPush(States::LevelComplete);

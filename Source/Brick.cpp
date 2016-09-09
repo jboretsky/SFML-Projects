@@ -29,7 +29,6 @@ sf::FloatRect Brick::getBoundingRect() const {
 }
 
 void Brick::hit() {
-	std::cout << mBrickLayer << std::endl;
 	if (mBrickLayer == Three) {
 		mBrickLayer = Two;
 	} else if (mBrickLayer == Two) {
@@ -59,10 +58,6 @@ sf::IntRect Brick::getTypeCoords(brickLayer layer) {
 	return rect;
 }
 
-// int Brick::getType() const {
-// 	return mBrickLayer;
-// }
-
 Brick::brickLayer Brick::getType(int i) {
 	if (i == 1) {
 		return Brick::One;
@@ -75,6 +70,10 @@ Brick::brickLayer Brick::getType(int i) {
 	}
 }
 
+Brick::brickLayer Brick::getType() const {
+	return mBrickLayer;
+}
+
 bool Brick::isDestroyed() const {
 	return mBrickLayer == None;
 }
@@ -82,7 +81,3 @@ bool Brick::isDestroyed() const {
 void Brick::destroy() {
 	mBrickLayer = None;
 }
-
-// bool Brick::isMarkedForRemoval() const {
-// 	return mIsMarkedForRemoval;
-// }

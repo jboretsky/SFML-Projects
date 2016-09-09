@@ -17,6 +17,10 @@
 
 class World : private sf::NonCopyable {
 	public:
+		static const int BALL_INIT_VELOCITY = 300;
+		static const int MAX_BALL_SPEED = 500;
+		static const int BALL_SPEED_STEP = 10;
+	public:
 		explicit World(sf::RenderWindow& window, FontHolder& fonts);
 		void update(sf::Time dt);
 		void draw();
@@ -29,7 +33,7 @@ class World : private sf::NonCopyable {
 		bool getBallDown() const;
 		void initPositions();
 		bool checkLevelComplete() const;
-		void loadNextLevel();
+		void loadNextLevel(sf::Time dt);
 
 	private:
 		void loadTextures();
@@ -38,6 +42,7 @@ class World : private sf::NonCopyable {
 		void recalculateBallPosition();
 		void handleCollisions();
 		void displayPlayerInfo();
+		void runCommands(sf::Time dt);
 
 	private:
 		enum Layer {
@@ -64,6 +69,8 @@ class World : private sf::NonCopyable {
 
 		int mLives;
 		bool mBallDown;
+		int mBricksDestroyed;
+		int mBallVelocity;
 };
 
 float angle(const sf::Vector2f& a, const sf::Vector2f& b = sf::Vector2f(0.f, 0.f));
