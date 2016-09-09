@@ -7,6 +7,7 @@
 #include "./Ball.hpp"
 #include "./Brick.hpp"
 #include "./Player.hpp"
+#include "./Pickup.hpp"
 #include "./CommandQueue.hpp"
 #include "./LevelManager.hpp"
 

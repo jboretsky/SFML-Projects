@@ -36,8 +36,8 @@ void World::update(sf::Time dt) {
 
 	runCommands(dt);
 
-	mSceneGraph.update(dt);
 	handleCollisions();
+	mSceneGraph.update(dt);
 
 	mSceneGraph.removeWrecks();
 	checkPosition();
@@ -159,8 +159,8 @@ void World::handleCollisions() {
 
 	for (auto pair : collisionPairs) {
 		if (matchesCategories(pair, Category::Player, Category::Ball)) {
-			auto& ball = static_cast<Ball&>(*pair.second);
 			auto& paddle = static_cast<Paddle&>(*pair.first);
+			auto& ball = static_cast<Ball&>(*pair.second);
 
 			float x = ball.getWorldPosition().x - paddle.getWorldPosition().x; // x will be 0 if it hits right in the center, negative to the left, positive to the right
 			// std::cout << "X position hit: "<< x << std::endl;
@@ -205,6 +205,12 @@ void World::handleCollisions() {
 				ball.setVelocity(-std::abs(currVelocity.x), currVelocity.y);
 			}
 			brick.hit();
+		}
+		if (matchesCategories(pair, Category::Player, Category::Pickup)) {
+			auto& paddle = static_cast<Paddle&>(*pair.first);
+			auto& pickup = static_cast<Pickup&>(*pair.second);
+
+			pickup.apply(paddle);
 		}
 	}
 }

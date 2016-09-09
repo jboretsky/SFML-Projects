@@ -21,7 +21,9 @@ void Brick::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 }
 
 void Brick::updateCurrent(sf::Time dt) {
-
+	if (isDestroyed()) {
+		std::cout << "Im destroyed!!!" << std::endl;
+	}
 }
 
 sf::FloatRect Brick::getBoundingRect() const {
@@ -35,6 +37,7 @@ void Brick::hit() {
 		mBrickLayer = One;
 	} else if (mBrickLayer == One) {
 		mBrickLayer = None;
+		mIsMarkedForRemoval = true;
 	}
 	mSprite.setTextureRect(getTypeCoords(mBrickLayer));
 }
@@ -79,5 +82,9 @@ bool Brick::isDestroyed() const {
 }
 
 void Brick::destroy() {
-	mBrickLayer = None;
+	mIsMarkedForRemoval = true;
+}
+
+bool Brick::isMarkedForRemoval() const {
+	return mIsMarkedForRemoval;
 }
