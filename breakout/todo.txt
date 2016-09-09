@@ -1,0 +1,2 @@
+- Add game over when lives are 0 and start over!
+- Add pickups
