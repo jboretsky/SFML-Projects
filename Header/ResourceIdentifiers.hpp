@@ -9,10 +9,10 @@ namespace Textures
 	{
 		Paddle,
 		Bricks,
-		WidePaddle,
 		GunPaddle,
 		Ball,
 		BackgroundImage,
+		Enlarge,
 		TitleScreen,
 	};
 }

@@ -26,3 +26,8 @@ unsigned int Paddle::getCategory() const {
 sf::FloatRect Paddle::getBoundingRect() const {
 	return getWorldTransform().transformRect(mSprite.getGlobalBounds());
 }
+
+void Paddle::enlarge() {
+	mSprite.setTextureRect(sf::IntRect(0,20,120,20));
+	centerOrigin(mSprite);
+}

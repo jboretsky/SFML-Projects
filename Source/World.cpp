@@ -94,6 +94,7 @@ void World::loadTextures() {
 	mTextures.load(Textures::Ball, "./media/breakout_sprites.png");
 	mTextures.load(Textures::Bricks, "./media/bricks.png");
 	mTextures.load(Textures::Paddle, "./media/paddles.png");
+	mTextures.load(Textures::Enlarge, "./media/enlarge.png");
 }
 
 void World::recalculateBallPosition() {

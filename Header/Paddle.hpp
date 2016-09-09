@@ -12,6 +12,8 @@ class Paddle : public Entity {
 
 		virtual sf::FloatRect getBoundingRect() const;
 		virtual unsigned int getCategory() const;
+
+		void enlarge();
 	private:
 		virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 
