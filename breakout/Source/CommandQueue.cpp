@@ -1,5 +1,7 @@
 #include "../Header/CommandQueue.hpp"
 
+#include <iostream>
+
 void CommandQueue::push(const Command& command) {
 	mQueue.push(command);
 }

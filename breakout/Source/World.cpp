@@ -37,7 +37,7 @@ void World::update(sf::Time dt) {
 	runCommands(dt);
 
 	handleCollisions();
-	mSceneGraph.update(dt);
+	mSceneGraph.update(dt, mCommandQueue);
 
 	mSceneGraph.removeWrecks();
 	checkPosition();
@@ -52,7 +52,8 @@ void World::runCommands(sf::Time dt) {
 
 void World::buildScene() {
 	for(std::size_t i = 0; i < LayerCount; ++i) {
-		SceneNode::Ptr layer(new SceneNode());
+		Category::Type category = (i == Foreground) ? Category::Scene : Category::None; 
+		SceneNode::Ptr layer(new SceneNode(category));
 		mSceneLayers[i] = layer.get();
 
 		mSceneGraph.attachChild(std::move(layer));
@@ -74,7 +75,7 @@ void World::buildScene() {
 	std::vector<LevelManager::BrickInfo*> currentLevelInfo = mLevelManager.getCurrentLevelVector();
 
 	for (int i = 0; i < currentLevelInfo.size(); ++i) {
-		std::unique_ptr<Brick> brick(new Brick(Brick::getType(currentLevelInfo[i]->type), mTextures.get(Textures::Bricks)));
+		std::unique_ptr<Brick> brick(new Brick(Brick::getType(currentLevelInfo[i]->type), mTextures));
 		brick->setPosition(currentLevelInfo[i]->position);
 		mSceneLayers[Foreground]->attachChild(std::move(brick));
 	}
@@ -211,6 +212,7 @@ void World::handleCollisions() {
 			auto& pickup = static_cast<Pickup&>(*pair.second);
 
 			pickup.apply(paddle);
+			pickup.destroy();
 		}
 	}
 }
@@ -238,21 +240,21 @@ bool World::checkLevelComplete() const{
 void World::loadNextLevel(sf::Time dt) {
 
 	Command command;
-	command.category = Category::Unbreakable;
-	command.action = derivedAction<Brick>([this] (Brick& b, sf::Time)
-	{
-			b.destroy();
+	command.category = Category::Unbreakable | Category::Pickup;
+	command.action = derivedAction<Entity>([this] (Entity& e, sf::Time) {
+		e.destroy();
 	});
 
 	mCommandQueue.push(command);
 
 	runCommands(dt);
+	mSceneGraph.removeWrecks();
 	mBallVelocity = BALL_INIT_VELOCITY;
 
 	std::vector<LevelManager::BrickInfo*> currentLevelInfo = mLevelManager.getCurrentLevelVector();
 
 	for (int i = 0; i < currentLevelInfo.size(); ++i) {
-		std::unique_ptr<Brick> brick(new Brick(Brick::getType(currentLevelInfo[i]->type), mTextures.get(Textures::Bricks)));
+		std::unique_ptr<Brick> brick(new Brick(Brick::getType(currentLevelInfo[i]->type), mTextures));
 		brick->setPosition(currentLevelInfo[i]->position);
 		mSceneLayers[Foreground]->attachChild(std::move(brick));
 	}

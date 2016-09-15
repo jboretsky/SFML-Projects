@@ -19,6 +19,7 @@ class Paddle : public Entity {
 
 	private:
 		sf::Sprite mSprite;
+		bool mIsEnlarged;
 };
 
 #endif

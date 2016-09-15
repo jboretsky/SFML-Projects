@@ -6,7 +6,8 @@
 #include <iostream>
 
 Paddle::Paddle(const sf::Texture& texture)
-: mSprite(texture) {
+: mSprite(texture)
+, mIsEnlarged(false) {
 	centerOrigin(mSprite);
 }
 
@@ -28,6 +29,9 @@ sf::FloatRect Paddle::getBoundingRect() const {
 }
 
 void Paddle::enlarge() {
-	mSprite.setTextureRect(sf::IntRect(0,20,120,20));
-	centerOrigin(mSprite);
+	if (!mIsEnlarged) {
+		mSprite.setTextureRect(sf::IntRect(0,20,120,20));
+		centerOrigin(mSprite);
+		mIsEnlarged = true;
+	}
 }

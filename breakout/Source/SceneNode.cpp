@@ -9,9 +9,10 @@
 #include <cmath>
 #include <iostream>
 
-SceneNode::SceneNode()
+SceneNode::SceneNode(Category::Type category)
 : mChildren()
-, mParent(nullptr) {}
+, mParent(nullptr)
+, mDefaultCategory(category) {}
 
 void SceneNode::attachChild(Ptr child) {
 	child->mParent = this;
@@ -44,21 +45,21 @@ void SceneNode::drawCurrent(sf::RenderTarget&, sf::RenderStates) const {
 	//Do nothing by default
 }
 
-void SceneNode::update(sf::Time dt) {
-	updateCurrent(dt);
-	updateChildren(dt);
+void SceneNode::update(sf::Time dt, CommandQueue& commands) {
+	updateCurrent(dt, commands);
+	updateChildren(dt, commands);
 }
 
 
 // implemented by others
-void SceneNode::updateCurrent(sf::Time)
+void SceneNode::updateCurrent(sf::Time, CommandQueue& commands)
 {
 
 }
 
-void SceneNode::updateChildren(sf::Time dt) {
+void SceneNode::updateChildren(sf::Time dt, CommandQueue& commands) {
 	for(auto& child: mChildren) {
-		child->update(dt);
+		child->update(dt, commands);
 	}
 }
 
@@ -83,7 +84,7 @@ void SceneNode::onCommand(const Command& command, sf::Time dt) {
 }
 
 unsigned int SceneNode::getCategory() const {
-	return Category::Scene;
+	return mDefaultCategory;
 }
 
 void SceneNode::checkSceneCollision(SceneNode& sceneGraph, std::set<Pair>& collisionPairs) {

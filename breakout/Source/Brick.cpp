@@ -1,14 +1,24 @@
 #include "../Header/Brick.hpp"
 #include "../Header/Utility.hpp"
+#include "../Header/CommandQueue.hpp"
+#include "../Header/DataTables.hpp"
+#include "../Header/ResourceHolder.hpp"
+#include "../Header/Pickup.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <iostream>
 
-Brick::Brick(brickLayer layer, sf::Texture& texture)
+Brick::Brick(brickLayer layer, TextureHolder& textures)
 : mBrickLayer(layer)
-, mSprite(texture, getTypeCoords(layer))
+, mSprite(textures.get(Textures::Bricks), getTypeCoords(layer))
+, mDropPickupCommand()
 , mIsMarkedForRemoval(false) {
 	centerOrigin(mSprite);
+
+	mDropPickupCommand.category = Category::Scene;
+	mDropPickupCommand.action = [this, &textures] (SceneNode& node, sf::Time) {
+		createPickup(node, textures);
+	};
 }
 
 unsigned int Brick::getCategory() const {
@@ -20,9 +30,12 @@ void Brick::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 	target.draw(mSprite, states);
 }
 
-void Brick::updateCurrent(sf::Time dt) {
+void Brick::updateCurrent(sf::Time dt, CommandQueue& commands) {
 	if (isDestroyed()) {
-		std::cout << "Im destroyed!!!" << std::endl;
+		checkPickupDrop(commands);
+
+		mIsMarkedForRemoval = true;
+		return;
 	}
 }
 
@@ -37,7 +50,6 @@ void Brick::hit() {
 		mBrickLayer = One;
 	} else if (mBrickLayer == One) {
 		mBrickLayer = None;
-		mIsMarkedForRemoval = true;
 	}
 	mSprite.setTextureRect(getTypeCoords(mBrickLayer));
 }
@@ -75,6 +87,23 @@ Brick::brickLayer Brick::getType(int i) {
 
 Brick::brickLayer Brick::getType() const {
 	return mBrickLayer;
+}
+
+void Brick::createPickup(SceneNode& node, const TextureHolder& textures) const {
+	
+	auto type = Pickup::Enlarge;
+
+	std::unique_ptr<Pickup> pickup(new Pickup(type, textures));
+	pickup->setPosition(getWorldPosition());
+	pickup->setVelocity(0.f, 100.f);
+	node.attachChild(std::move(pickup));
+}
+
+void Brick::checkPickupDrop(CommandQueue& commands) {
+	int random = rand() % 1;
+	if (random == 0) {
+		commands.push(mDropPickupCommand);
+	}
 }
 
 bool Brick::isDestroyed() const {

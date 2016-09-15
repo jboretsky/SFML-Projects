@@ -13,7 +13,8 @@ namespace {
 
 Pickup::Pickup(Type type, const TextureHolder& textures)
 : mType(type)
-, mSprite(textures.get(Table[type].texture)) {
+, mSprite(textures.get(Table[type].texture))
+, mIsMarkedForRemoval(false) {
 	centerOrigin(mSprite);
 }
 
@@ -32,4 +33,13 @@ void Pickup::apply(Paddle& player) const {
 
 void Pickup::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(mSprite, states);
+}
+
+bool Pickup::isMarkedForRemoval() const {
+	return mIsMarkedForRemoval;
+}
+
+void Pickup::destroy() {
+	mIsMarkedForRemoval = true;
+	std::cout << "Destroying" << std::endl;
 }

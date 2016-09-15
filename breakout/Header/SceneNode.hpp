@@ -2,7 +2,6 @@
 #define SCENENODE
 
 #include "./Category.hpp"
-#include "./Command.hpp"
 
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/System/Time.hpp>
@@ -13,6 +12,9 @@
 #include <memory>
 #include <set>
 
+struct Command;
+class CommandQueue;
+
 class SceneNode : public sf::Drawable, public sf::Transformable, private sf::NonCopyable {
 	public:
 		typedef std::unique_ptr<SceneNode> Ptr;
@@ -22,10 +24,10 @@ class SceneNode : public sf::Drawable, public sf::Transformable, private sf::Non
 		typedef std::pair<SceneNode*, SceneNode*> Pair;
 
 	public:
-		SceneNode();
+		SceneNode(Category::Type category = Category::None);
 		void attachChild(Ptr child);
 		Ptr detachChild(const SceneNode& node);
-		void update(sf::Time dt);
+		void update(sf::Time dt, CommandQueue& commands);
 		sf::Vector2f getWorldPosition() const;
 		sf::Transform getWorldTransform() const;
 
@@ -43,13 +45,16 @@ class SceneNode : public sf::Drawable, public sf::Transformable, private sf::Non
 	private:
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 		virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
-		virtual void updateCurrent(sf::Time dt);
-		void updateChildren(sf::Time dt);
+		
+		virtual void updateCurrent(sf::Time dt, CommandQueue& commands);
+		void updateChildren(sf::Time dt, CommandQueue& commands);
+		
 		void drawBoundingRect(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	private:
 		std::vector<Ptr> mChildren;
 		SceneNode* mParent;
+		Category::Type mDefaultCategory;
 };
 
 bool collision(const SceneNode& lhs, const SceneNode& rhs);

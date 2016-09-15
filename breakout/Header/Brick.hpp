@@ -2,6 +2,9 @@
 #define BRICK
 
 #include "./Entity.hpp"
+#include "./Command.hpp"
+#include "./CommandQueue.hpp"
+#include "./ResourceIdentifiers.hpp"
 
 #include <SFML/Graphics/Sprite.hpp>
 
@@ -16,14 +19,13 @@ class Brick : public Entity {
 		};
 
 	public:
-		Brick(brickLayer layer, sf::Texture& texture);
+		Brick(brickLayer layer, TextureHolder& textures);
 		virtual unsigned int getCategory() const;
 
 		virtual sf::FloatRect getBoundingRect() const;
 		sf::IntRect getTypeCoords(brickLayer layer);
 
 		void hit();
-		void destroy();
 		static Brick::brickLayer getType(int i);
 		Brick::brickLayer getType() const;
 		virtual bool isMarkedForRemoval() const;
@@ -31,11 +33,16 @@ class Brick : public Entity {
 	private:
 		virtual bool isDestroyed() const;
 		virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
-		virtual void updateCurrent(sf::Time dt);
+		virtual void updateCurrent(sf::Time dt, CommandQueue& commands);
+
+		virtual void destroy();
+		void checkPickupDrop(CommandQueue& commands);
+		void createPickup(SceneNode& node, const TextureHolder& textures) const;
 
 	private:
 		sf::Sprite mSprite;
 		brickLayer mBrickLayer;
+		Command mDropPickupCommand;
 		bool mIsMarkedForRemoval;
 };
 
