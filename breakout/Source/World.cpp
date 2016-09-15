@@ -34,6 +34,8 @@ void World::draw() {
 void World::update(sf::Time dt) {
 	mPlayerPaddle->setVelocity(0.f, 0.f);
 
+	destroyEntitiesOutsideView();
+
 	runCommands(dt);
 
 	handleCollisions();
@@ -99,8 +101,7 @@ void World::loadTextures() {
 }
 
 void World::recalculateBallPosition() {
-	sf::FloatRect viewBounds(mWorldView.getCenter() - mWorldView.getSize() / 2.f, mWorldView.getSize());
-
+	sf::FloatRect viewBounds = getViewBounds();
 	sf::Vector2f ballPosition = mBall->getPosition();
 	float ballMidY = mBall->getBoundingRect().height / 2.f;
 	float ballMidX = mBall->getBoundingRect().width / 2.f;
@@ -132,7 +133,7 @@ void World::recalculateBallPosition() {
 }
 
 void World::checkPosition() {
-	sf::FloatRect viewBounds(mWorldView.getCenter() - mWorldView.getSize() / 2.f, mWorldView.getSize());
+	sf::FloatRect viewBounds = getViewBounds();
 	sf::Vector2f position = mPlayerPaddle->getPosition();
 	sf::FloatRect bounds = mPlayerPaddle->getBoundingRect();
 	position.x = std::max(position.x, viewBounds.left + bounds.width / 2.f);
@@ -217,6 +218,18 @@ void World::handleCollisions() {
 	}
 }
 
+
+void World::destroyEntitiesOutsideView() {
+	Command command;
+	command.category = Category::Pickup;
+	command.action = derivedAction<Entity>([this] (Entity& e, sf::Time) {
+		if (!getBattlefieldBounds().intersects(e.getBoundingRect()))
+			e.destroy();
+	});
+
+	mCommandQueue.push(command);
+}
+
 void World::setLives(int lives) {
 	mLives = lives;
 }
@@ -277,3 +290,11 @@ float to_degrees(float radians)
 	return degrees < 0 ? degrees + 360 : degrees;
 }
 
+sf::FloatRect World::getBattlefieldBounds() const {
+	sf::FloatRect bounds = getViewBounds();
+	return bounds;
+}
+
+sf::FloatRect World::getViewBounds() const {
+	return sf::FloatRect(mWorldView.getCenter() - mWorldView.getSize() / 2.f, mWorldView.getSize());
+}

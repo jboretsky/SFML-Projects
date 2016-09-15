@@ -100,7 +100,7 @@ void Brick::createPickup(SceneNode& node, const TextureHolder& textures) const {
 }
 
 void Brick::checkPickupDrop(CommandQueue& commands) {
-	int random = rand() % 1;
+	int random = rand() % 4;
 	if (random == 0) {
 		commands.push(mDropPickupCommand);
 	}

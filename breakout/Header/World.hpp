@@ -44,6 +44,9 @@ class World : private sf::NonCopyable {
 		void handleCollisions();
 		void displayPlayerInfo();
 		void runCommands(sf::Time dt);
+		sf::FloatRect getViewBounds() const;
+		sf::FloatRect getBattlefieldBounds() const;
+		void destroyEntitiesOutsideView();
 
 	private:
 		enum Layer {
