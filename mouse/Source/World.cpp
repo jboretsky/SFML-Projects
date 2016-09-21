@@ -79,8 +79,8 @@ void World::adjustPlayerVelocity() {
 Tile* World::getTileAt(sf::Vector2f position) {
 	for (auto tile: mTiles) {
 		sf::FloatRect bounds = tile->getBounds();
-		if (position.x > bounds.left && position.x < bounds.left + bounds.width) {
-			if (position.y > bounds.top && position.y < bounds.top + bounds.height) {
+		if (position.x >= bounds.left && position.x < bounds.left + bounds.width) {
+			if (position.y >= bounds.top && position.y < bounds.top + bounds.height) {
 				return tile;
 			}
 		}
