@@ -23,6 +23,7 @@ class World {
 	private:
 		void adjustPlayerPosition();
 		void adjustPlayerVelocity();
+		Tile* getTileAt(sf::Vector2f position);
 
 	private:
 		sf::RenderWindow& mWindow;

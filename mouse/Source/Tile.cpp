@@ -3,8 +3,8 @@
 Tile::Tile(Type type, sf::Vector2f position)
 : mType(type)
 , mTile(sf::Vector2f(20,20)) {
-	mTile.setFillColor(sf::Color(255*type, 255*type, 255*type));
 	mTile.setPosition(position);
+	setColor();
 }
 
 sf::Vector2f Tile::getPosition() const {
@@ -27,4 +27,17 @@ void Tile::drawBoundingRect(sf::RenderTarget& target, sf::RenderStates states) c
 	shape.setOutlineThickness(1.f);
 
 	target.draw(shape, states);
+}
+
+sf::FloatRect Tile::getBounds() const {
+	return mTile.getGlobalBounds();
+}
+
+void Tile::setType(Type type) {
+	mType = type;
+	setColor();
+}
+
+void Tile::setColor() {
+	mTile.setFillColor(sf::Color(255*mType, 255*mType, 255*mType));
 }

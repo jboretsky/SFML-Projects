@@ -40,7 +40,9 @@ void World::update(sf::Time dt) {
 void World::handleEvent(const sf::Event& event, sf::Time dt) {
 	if(event.type == sf::Event::MouseButtonPressed) {
 		if (event.mouseButton.button == sf::Mouse::Right) {
-			std::cout << "x: " << sf::Mouse::getPosition().x << " y: " << sf::Mouse::getPosition().y << std::endl;
+			std::cout << "x: " << sf::Mouse::getPosition(mWindow).x << " y: " << sf::Mouse::getPosition(mWindow).y << std::endl;
+			Tile* tile = getTileAt(sf::Vector2f(sf::Mouse::getPosition(mWindow).x, sf::Mouse::getPosition(mWindow).y));
+			tile->setType(Tile::Ground);
 		}
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
@@ -72,4 +74,15 @@ void World::adjustPlayerPosition() {
 
 void World::adjustPlayerVelocity() {
 
+}
+
+Tile* World::getTileAt(sf::Vector2f position) {
+	for (auto tile: mTiles) {
+		sf::FloatRect bounds = tile->getBounds();
+		if (position.x > bounds.left && position.x < bounds.left + bounds.width) {
+			if (position.y > bounds.top && position.y < bounds.top + bounds.height) {
+				return tile;
+			}
+		}
+	}
 }

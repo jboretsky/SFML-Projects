@@ -15,10 +15,14 @@ class Tile : public sf::Drawable {
 	public:
 		Tile(Type type, sf::Vector2f position);
 		sf::Vector2f getPosition() const;
+		sf::FloatRect getBounds() const;
+		void setType(Type type);
 
 	private:
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 		void drawBoundingRect(sf::RenderTarget& target, sf::RenderStates states) const;
+
+		void setColor();
 
 	private:
 		Type mType;
