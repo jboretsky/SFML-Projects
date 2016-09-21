@@ -2,12 +2,11 @@
 #define WORLD
 
 #include "./Tile.hpp"
+#include "./Player.hpp"
 
 #include <SFML/Window/Event.hpp>
-#include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/View.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/System/Time.hpp>
 
 #include <vector>
@@ -33,7 +32,7 @@ class World {
 		sf::Vector2f mWorldBounds;
 		sf::FloatRect mWorldRect;
 
-		sf::CircleShape mPlayer;
+		Player* mPlayer;
 		std::vector<Tile*> mTiles;
 };
 
