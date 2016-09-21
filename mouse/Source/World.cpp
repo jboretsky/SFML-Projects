@@ -41,7 +41,8 @@ void World::handleEvent(const sf::Event& event, sf::Time dt) {
 		if (event.mouseButton.button == sf::Mouse::Right) {
 			if (mWorldRect.contains(sf::Mouse::getPosition(mWindow).x, sf::Mouse::getPosition(mWindow).y)) {
 				Tile* tile = getTileAt(sf::Vector2f(sf::Mouse::getPosition(mWindow).x, sf::Mouse::getPosition(mWindow).y));
-				tile->setType(Tile::Ground);
+				// tile->setType(Tile::Ground);
+				mPlayer->moveTo(tile->getPosition());
 			}
 		}
 	}

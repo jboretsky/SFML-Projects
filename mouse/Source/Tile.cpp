@@ -1,9 +1,11 @@
 #include "../Header/Tile.hpp"
+#include "../Header/Utility.hpp"
 
 Tile::Tile(Type type, sf::Vector2f position)
 : mType(type)
 , mTile(sf::Vector2f(20,20)) {
-	mTile.setPosition(position);
+	centerOrigin(mTile);
+	mTile.setPosition(position.x + mTile.getGlobalBounds().width / 2.f, position.y + mTile.getGlobalBounds().height / 2.f);
 	setColor();
 }
 
