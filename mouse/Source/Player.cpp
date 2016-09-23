@@ -5,6 +5,7 @@ Player::Player()
 : mVelocity(0,0)
 , mPlayer(10) {
 	centerOrigin(mPlayer);
+	mPlayer.setFillColor(sf::Color::Black);
 }
 
 void Player::setVelocity(sf::Vector2f velocity) {
@@ -15,8 +16,9 @@ void Player::setVelocity(float x, float y) {
 	mVelocity = sf::Vector2f(x,y);
 }
 
-void Player::update() {
-	float vel = 3.f;
+// this function will need to be updated to cover pathfinding
+void Player::update(sf::Time dt) {
+	float vel = 300.f;
 	mVelocity = sf::Vector2f(0.f,0.f);
 	if(!mMoveQueue.empty()) {
 		sf::Vector2f moveTo = mMoveQueue.back();
@@ -25,16 +27,14 @@ void Player::update() {
 		float yDist = moveTo.y - playerPosition.y;
 		float xDist = moveTo.x - playerPosition.x;
 		float angle = std::atan2(yDist, xDist);
-		float error = 2;
+		float error = 3.f;
 		if (std::abs(playerPosition.x - moveTo.x) > error || std::abs(playerPosition.y - moveTo.y) > error) {
 			setVelocity(vel * std::cos(angle), vel * std::sin(angle));
-			std::cout << std::abs(playerPosition.x - moveTo.x) << std::endl;
-			std::cout << std::abs(playerPosition.y - moveTo.y) << std::endl;
 		} else {
 			setPosition(moveTo);
 			mMoveQueue.pop_back();
 		}
-		move(mVelocity);
+		move(mVelocity.x * dt.asSeconds(), mVelocity.y * dt.asSeconds());
 	}
 }
 
@@ -48,5 +48,5 @@ sf::FloatRect Player::getBounds() const {
 }
 
 void Player::moveTo(sf::Vector2f tilePosition) {
-	mMoveQueue.insert(mMoveQueue.begin(),tilePosition);
+	mMoveQueue.push_front(tilePosition);
 }

@@ -25,7 +25,7 @@ void Tile::drawBoundingRect(sf::RenderTarget& target, sf::RenderStates states) c
 	shape.setPosition(sf::Vector2f(rect.left, rect.top));
 	shape.setSize(sf::Vector2f(rect.width, rect.height));
 	shape.setFillColor(sf::Color::Transparent);
-	shape.setOutlineColor(sf::Color::Green);
+	shape.setOutlineColor(sf::Color::Black);
 	shape.setOutlineThickness(1.f);
 
 	target.draw(shape, states);
