@@ -9,28 +9,34 @@ World::World(sf::RenderWindow& window)
 , mWorldBounds(sf::Vector2f(mWorldView.getSize().x - 30.f, mWorldView.getSize().y - 30.f))
 , mWorldRect(sf::FloatRect(15, 15, mWorldBounds.x, mWorldBounds.y))
 , mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldView.getSize().y / 2.f)
-, mPlayer(NULL) {
+, mPlayer(NULL)
+, mRows(mWorldRect.height / 20)
+, mColumns(mWorldRect.width / 20) {
 	mPlayer = new Player();
 	std::cout << mWorldRect.left << " " << mWorldRect.top << std::endl;
-	for (int j = 0; j < mWorldRect.height / 20; ++j) {
-		for (int i = 0; i < mWorldRect.width / 20; ++i) {
-			mTiles.push_back(new Tile(Tile::Wall, sf::Vector2f(mWorldRect.left + i*20, mWorldRect.top + j*20)));
+	for (int j = 0; j < mRows; ++j) {
+		std::vector<Tile*> tiles;
+		for (int i = 0; i < mColumns; ++i) {
+			tiles.push_back(new Tile(Tile::Ground, sf::Vector2f(mWorldRect.left + i*20, mWorldRect.top + j*20)));
 		}
+		mTiles.push_back(tiles);
 	}
 
-	mPlayer->setPosition(mTiles[0]->getPosition());
+	mPlayer->setPosition(mTiles[0][0]->getPosition());
 }
 
 void World::draw() {
 	mWindow.setView(mWorldView);
-	for (auto tile : mTiles) {
-		mWindow.draw(*tile);
+	for (int i = 0; i < mRows; ++i) {
+		for (int j = 0; j < mColumns; ++j) {
+			mWindow.draw(*mTiles[i][j]);
+		}
 	}
 	mWindow.draw(*mPlayer);
 }
 
 void World::update(sf::Time dt) {
-	mPlayer->update();
+	mPlayer->update(dt);
 	mPlayer->setVelocity(0.f, 0.f);
 	adjustPlayerPosition();
 	adjustPlayerVelocity();
@@ -41,8 +47,13 @@ void World::handleEvent(const sf::Event& event, sf::Time dt) {
 		if (event.mouseButton.button == sf::Mouse::Right) {
 			if (mWorldRect.contains(sf::Mouse::getPosition(mWindow).x, sf::Mouse::getPosition(mWindow).y)) {
 				Tile* tile = getTileAt(sf::Vector2f(sf::Mouse::getPosition(mWindow).x, sf::Mouse::getPosition(mWindow).y));
-				// tile->setType(Tile::Ground);
 				mPlayer->moveTo(tile->getPosition());
+			}
+		}
+		if (event.mouseButton.button == sf::Mouse::Left) {
+			if (mWorldRect.contains(sf::Mouse::getPosition(mWindow).x, sf::Mouse::getPosition(mWindow).y)) {
+				Tile* tile = getTileAt(sf::Vector2f(sf::Mouse::getPosition(mWindow).x, sf::Mouse::getPosition(mWindow).y));
+				tile->setType(Tile::Wall);
 			}
 		}
 	}
@@ -78,11 +89,13 @@ void World::adjustPlayerVelocity() {
 }
 
 Tile* World::getTileAt(sf::Vector2f position) {
-	for (auto tile: mTiles) {
-		sf::FloatRect bounds = tile->getBounds();
-		if (position.x >= bounds.left && position.x < bounds.left + bounds.width) {
-			if (position.y >= bounds.top && position.y < bounds.top + bounds.height) {
-				return tile;
+	for(int i = 0; i < mRows; ++i) {
+		for(int j = 0; j < mColumns; ++j) {
+			sf::FloatRect bounds = mTiles[i][j]->getBounds();
+			if (position.x >= bounds.left && position.x < bounds.left + bounds.width) {
+				if (position.y >= bounds.top && position.y < bounds.top + bounds.height) {
+					return mTiles[i][j];
+				}
 			}
 		}
 	}

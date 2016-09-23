@@ -33,7 +33,10 @@ class World {
 		sf::FloatRect mWorldRect;
 
 		Player* mPlayer;
-		std::vector<Tile*> mTiles;
+		std::vector<std::vector<Tile*>> mTiles;
+
+		int mRows;
+		int mColumns;
 };
 
 #endif
