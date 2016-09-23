@@ -3,6 +3,7 @@
 
 #include "./Tile.hpp"
 #include "./Player.hpp"
+#include "./TileManager.hpp"
 
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -35,8 +36,7 @@ class World {
 		Player* mPlayer;
 		std::vector<std::vector<Tile*>> mTiles;
 
-		int mRows;
-		int mColumns;
+		TileManager mTileManager;
 };
 
 #endif

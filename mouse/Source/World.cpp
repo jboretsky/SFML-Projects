@@ -10,28 +10,15 @@ World::World(sf::RenderWindow& window)
 , mWorldRect(sf::FloatRect(15, 15, mWorldBounds.x, mWorldBounds.y))
 , mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldView.getSize().y / 2.f)
 , mPlayer(NULL)
-, mRows(mWorldRect.height / 20)
-, mColumns(mWorldRect.width / 20) {
+, mTileManager(mWorldRect) {
 	mPlayer = new Player();
-	std::cout << mWorldRect.left << " " << mWorldRect.top << std::endl;
-	for (int j = 0; j < mRows; ++j) {
-		std::vector<Tile*> tiles;
-		for (int i = 0; i < mColumns; ++i) {
-			tiles.push_back(new Tile(Tile::Ground, sf::Vector2f(mWorldRect.left + i*20, mWorldRect.top + j*20)));
-		}
-		mTiles.push_back(tiles);
-	}
 
-	mPlayer->setPosition(mTiles[0][0]->getPosition());
+	mPlayer->setPosition(0.f,0.f);
 }
 
 void World::draw() {
 	mWindow.setView(mWorldView);
-	for (int i = 0; i < mRows; ++i) {
-		for (int j = 0; j < mColumns; ++j) {
-			mWindow.draw(*mTiles[i][j]);
-		}
-	}
+	mWindow.draw(mTileManager);
 	mWindow.draw(*mPlayer);
 }
 
@@ -46,28 +33,16 @@ void World::handleEvent(const sf::Event& event, sf::Time dt) {
 	if(event.type == sf::Event::MouseButtonPressed) {
 		if (event.mouseButton.button == sf::Mouse::Right) {
 			if (mWorldRect.contains(sf::Mouse::getPosition(mWindow).x, sf::Mouse::getPosition(mWindow).y)) {
-				Tile* tile = getTileAt(sf::Vector2f(sf::Mouse::getPosition(mWindow).x, sf::Mouse::getPosition(mWindow).y));
+				Tile* tile = mTileManager.getTileAt(sf::Vector2f(sf::Mouse::getPosition(mWindow).x, sf::Mouse::getPosition(mWindow).y));
 				mPlayer->moveTo(tile->getPosition());
 			}
 		}
 		if (event.mouseButton.button == sf::Mouse::Left) {
 			if (mWorldRect.contains(sf::Mouse::getPosition(mWindow).x, sf::Mouse::getPosition(mWindow).y)) {
-				Tile* tile = getTileAt(sf::Vector2f(sf::Mouse::getPosition(mWindow).x, sf::Mouse::getPosition(mWindow).y));
+				Tile* tile = mTileManager.getTileAt(sf::Vector2f(sf::Mouse::getPosition(mWindow).x, sf::Mouse::getPosition(mWindow).y));
 				tile->setType(Tile::Wall);
 			}
 		}
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-		mPlayer->setVelocity(-300.f * dt.asSeconds(), 0.f);
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-		mPlayer->setVelocity(0.f,-300.f * dt.asSeconds());
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-		mPlayer->setVelocity(0.f, 300.f * dt.asSeconds());
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-		mPlayer->setVelocity(300.f * dt.asSeconds(), 0.f);
 	}
 }
 
@@ -86,17 +61,4 @@ void World::adjustPlayerPosition() {
 
 void World::adjustPlayerVelocity() {
 
-}
-
-Tile* World::getTileAt(sf::Vector2f position) {
-	for(int i = 0; i < mRows; ++i) {
-		for(int j = 0; j < mColumns; ++j) {
-			sf::FloatRect bounds = mTiles[i][j]->getBounds();
-			if (position.x >= bounds.left && position.x < bounds.left + bounds.width) {
-				if (position.y >= bounds.top && position.y < bounds.top + bounds.height) {
-					return mTiles[i][j];
-				}
-			}
-		}
-	}
 }
